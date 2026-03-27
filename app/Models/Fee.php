@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Fee extends Model
 {
     protected $fillable = [
-        'min_fee',
-        'max_fee',
+        'minFee',
+        'maxFee',
         'percentage',
     ];
 

@@ -11,16 +11,16 @@ class ProductIngredient extends Model
         'ingredient_id',
     ];
 
-    // Relación con Product (un product_ingredient puede estar en muchos productos)
-    public function products()
+    // Relación con Product
+    public function product()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Product::class);
     }
 
-    // Relación con Ingredient (un product_ingredient puede estar en muchos ingredientes)
-    public function ingredients()
+    // Relación con Ingredient
+    public function ingredient()
     {
-        return $this->hasMany(Ingredient::class);
+        return $this->belongsTo(Ingredient::class);
     }
 
 }
