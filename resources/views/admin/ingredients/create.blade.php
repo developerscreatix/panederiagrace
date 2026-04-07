@@ -25,6 +25,21 @@
                         @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
+                    <div class="form-check mb-4">
+                        <input type="hidden" name="is_special" value="0">
+                        <input class="form-check-input" type="checkbox"
+                               name="is_special"
+                               value="1"
+                               id="is_special"
+                               {{ old('is_special') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="is_special">
+                            Marcar como ingrediente especial seleccionable
+                        </label>
+                        <div class="form-text">
+                            Úsalo para opciones como pan blanco o pan integral.
+                        </div>
+                    </div>
+
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-floppy"></i> Guardar

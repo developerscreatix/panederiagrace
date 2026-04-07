@@ -36,13 +36,18 @@
                                         @if($item['discount'] > 0)
                                             <span class="badge bg-warning text-dark ms-1">-{{ $item['discount'] }}%</span>
                                         @endif
+                                        @if(!empty($item['special_ingredient_name']))
+                                            <div class="small text-muted mt-1">
+                                                Opción: {{ $item['special_ingredient_name'] }}
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="text-center align-middle">{{ $item['quantity'] }}</td>
                                     <td class="text-end align-middle">${{ number_format($lineTotal, 2) }}</td>
                                     <td class="text-end align-middle">
                                         <form action="{{ route('cart.remove') }}" method="POST">
                                             @csrf
-                                            <input type="hidden" name="product_id" value="{{ $item['id'] }}">
+                                            <input type="hidden" name="cart_key" value="{{ $item['key'] ?? $item['id'] }}">
                                             <button class="btn btn-sm btn-outline-danger" type="submit">
                                                 <i class="bi bi-trash"></i>
                                             </button>

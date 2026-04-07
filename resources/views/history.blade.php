@@ -29,7 +29,11 @@
                         <td>
                             <small>
                                 @foreach($order->orderProducts as $op)
-                                    {{ $op->product->name }} ×{{ $op->quantity }}<br>
+                                    {{ $op->product->name }} ×{{ $op->quantity }}
+                                    @if($op->specialIngredient)
+                                        <span class="text-muted">({{ $op->specialIngredient->name }})</span>
+                                    @endif
+                                    <br>
                                 @endforeach
                             </small>
                         </td>

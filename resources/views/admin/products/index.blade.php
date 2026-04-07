@@ -18,6 +18,7 @@
                     <th>Imagen</th>
                     <th>Nombre</th>
                     <th>Categoría</th>
+                    <th>Estado</th>
                     <th>Precio</th>
                     <th>Descuento</th>
                     <th></th>
@@ -42,6 +43,13 @@
                             <span class="text-muted small">{{ Str::limit($product->description, 60) }}</span>
                         </td>
                         <td>{{ $product->category->name }}</td>
+                        <td>
+                            @if($product->is_enabled)
+                                <span class="badge bg-success-subtle text-success">Habilitado</span>
+                            @else
+                                <span class="badge bg-secondary-subtle text-secondary">Deshabilitado</span>
+                            @endif
+                        </td>
                         <td>${{ number_format($product->price, 2) }}</td>
                         <td>
                             @if($product->discount > 0)
@@ -51,15 +59,20 @@
                             @endif
                         </td>
                         <td>
-                            <form action="{{ route('admin.products.destroy', $product) }}"
-                                  method="POST"
-                                  onsubmit="return confirm('¿Eliminar este producto?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger" type="submit">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ route('admin.products.toggle', $product) }}"
+                                      method="POST"
+                                      onsubmit="return confirm('¿Cambiar el estado de este producto?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="btn btn-sm {{ $product->is_enabled ? 'btn-outline-warning' : 'btn-outline-success' }}" type="submit">
+                                        <i class="bi {{ $product->is_enabled ? 'bi-pause-circle' : 'bi-play-circle' }}"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

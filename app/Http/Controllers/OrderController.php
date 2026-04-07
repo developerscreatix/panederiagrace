@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fee;
+use App\Models\Ingredient;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -23,22 +25,30 @@ class OrderController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1',
+            'special_ingredient_id' => 'nullable|integer',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::where('is_enabled', true)
+            ->with('productIngredients.ingredient')
+            ->findOrFail($request->product_id);
         $cart = session()->get('cart', []);
+        $specialIngredient = $this->resolveSpecialIngredient($product, $request->input('special_ingredient_id'));
 
-        $pid = $product->id;
-        if (isset($cart[$pid])) {
-            $cart[$pid]['quantity'] += $request->quantity;
+        $cartKey = $this->buildCartItemKey($product->id, $specialIngredient?->id);
+
+        if (isset($cart[$cartKey])) {
+            $cart[$cartKey]['quantity'] += $request->quantity;
         } else {
-            $cart[$pid] = [
-                'id'       => $product->id,
-                'name'     => $product->name,
-                'price'    => $product->price,
+            $cart[$cartKey] = [
+                'key' => $cartKey,
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->price,
                 'discount' => $product->discount,
                 'quantity' => $request->quantity,
+                'special_ingredient_id' => $specialIngredient?->id,
+                'special_ingredient_name' => $specialIngredient?->name,
             ];
         }
 
@@ -50,8 +60,10 @@ class OrderController extends Controller
     public function removeFromCart(Request $request)
     {
         $cart = session()->get('cart', []);
-        if (isset($cart[$request->product_id])) {
-            unset($cart[$request->product_id]);
+        $cartKey = $request->input('cart_key', $request->input('product_id'));
+
+        if ($cartKey !== null && isset($cart[$cartKey])) {
+            unset($cart[$cartKey]);
             session()->put('cart', $cart);
         }
         return redirect()->route('cart');
@@ -71,12 +83,36 @@ class OrderController extends Controller
             return redirect()->route('cart')->with('error', 'El carrito está vacío.');
         }
 
+        $products = Product::with('productIngredients.ingredient')
+            ->whereIn('id', collect($cart)->pluck('id')->all())
+            ->where('is_enabled', true)
+            ->get()
+            ->keyBy('id');
+
         // Calculate subtotal
         $subtotal = 0;
         foreach ($cart as $item) {
-            $effectivePrice = $item['price'] * (1 - ($item['discount'] / 100));
+            $itemKey = $item['key'] ?? $this->buildCartItemKey($item['id'], $item['special_ingredient_id'] ?? null);
+            $product = $products->get($item['id']);
+
+            if (!$product) {
+                throw ValidationException::withMessages([
+                    'cart' => 'Uno de los productos del carrito ya no está disponible.',
+                ]);
+            }
+
+            $selectedSpecialIngredient = $this->resolveSpecialIngredient($product, $item['special_ingredient_id'] ?? null);
+            $effectivePrice = $product->price * (1 - ($product->discount / 100));
             $subtotal += $effectivePrice * $item['quantity'];
+
+            $cart[$itemKey]['key'] = $itemKey;
+            $cart[$itemKey]['price'] = $product->price;
+            $cart[$itemKey]['discount'] = $product->discount;
+            $cart[$itemKey]['special_ingredient_id'] = $selectedSpecialIngredient?->id;
+            $cart[$itemKey]['special_ingredient_name'] = $selectedSpecialIngredient?->name;
         }
+
+        session()->put('cart', $cart);
 
         // Find applicable fee
         $fee = Fee::where('minFee', '<=', $subtotal)
@@ -95,12 +131,17 @@ class OrderController extends Controller
         ]);
 
         $hasQuantityColumn = Schema::hasColumn('order_products', 'quantity');
+        $hasSpecialIngredientColumn = Schema::hasColumn('order_products', 'special_ingredient_id');
 
         foreach ($cart as $item) {
             $orderProductData = [
-                'order_id'   => $order->id,
+                'order_id' => $order->id,
                 'product_id' => $item['id'],
             ];
+
+            if ($hasSpecialIngredientColumn) {
+                $orderProductData['special_ingredient_id'] = $item['special_ingredient_id'] ?? null;
+            }
 
             if ($hasQuantityColumn) {
                 $orderProductData['quantity'] = $item['quantity'];
@@ -117,14 +158,14 @@ class OrderController extends Controller
     // Confirmation page
     public function confirmation(Order $order)
     {
-        $order->load('orderProducts.product');
+        $order->load('orderProducts.product', 'orderProducts.specialIngredient');
         return view('confirmation', compact('order'));
     }
 
     // Admin: pending orders
     public function dashboard()
     {
-        $orders = Order::with('orderProducts.product')
+        $orders = Order::with('orderProducts.product', 'orderProducts.specialIngredient')
                         ->where('is_recieved', false)
                         ->orderBy('created_at', 'asc')
                         ->get();
@@ -141,7 +182,7 @@ class OrderController extends Controller
     // Admin: completed orders (history)
     public function history()
     {
-        $orders = Order::with('orderProducts.product')
+        $orders = Order::with('orderProducts.product', 'orderProducts.specialIngredient')
                         ->where('is_recieved', true)
                         ->orderBy('updated_at', 'desc')
                         ->get();
@@ -152,7 +193,7 @@ class OrderController extends Controller
     public function wallet()
     {
         $today = today();
-        $orders = Order::with('orderProducts.product')
+        $orders = Order::with('orderProducts.product', 'orderProducts.specialIngredient')
                         ->where('is_recieved', true)
                         ->whereDate('created_at', $today)
                         ->get();
@@ -160,5 +201,38 @@ class OrderController extends Controller
         $total = $orders->sum('total');
 
         return view('wallet', compact('orders', 'total'));
+    }
+
+    private function resolveSpecialIngredient(Product $product, $specialIngredientId): ?Ingredient
+    {
+        $specialIngredients = $product->productIngredients
+            ->map->ingredient
+            ->filter(fn ($ingredient) => $ingredient && $ingredient->is_special)
+            ->values();
+
+        if ($specialIngredients->isEmpty()) {
+            return null;
+        }
+
+        if (!$specialIngredientId) {
+            throw ValidationException::withMessages([
+                'special_ingredient_id' => 'Selecciona una opción especial para este producto.',
+            ]);
+        }
+
+        $selectedIngredient = $specialIngredients->firstWhere('id', (int) $specialIngredientId);
+
+        if (!$selectedIngredient) {
+            throw ValidationException::withMessages([
+                'special_ingredient_id' => 'La opción especial seleccionada no pertenece a este producto.',
+            ]);
+        }
+
+        return $selectedIngredient;
+    }
+
+    private function buildCartItemKey(int $productId, ?int $specialIngredientId): string
+    {
+        return $productId . ':' . ($specialIngredientId ?? 'base');
     }
 }

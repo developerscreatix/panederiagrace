@@ -11,6 +11,16 @@
             <h4 class="text-muted mb-3 border-bottom pb-1">{{ $category->name }}</h4>
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 mb-4">
                 @foreach($category->products as $product)
+                    @php
+                        $regularIngredients = $product->productIngredients
+                            ->filter(fn ($pi) => !$pi->ingredient?->is_special)
+                            ->map(fn ($pi) => $pi->ingredient->name)
+                            ->values();
+                        $specialIngredients = $product->productIngredients
+                            ->filter(fn ($pi) => $pi->ingredient?->is_special)
+                            ->map(fn ($pi) => ['id' => $pi->ingredient->id, 'name' => $pi->ingredient->name])
+                            ->values();
+                    @endphp
                     <div class="col">
                         <div class="card h-100 product-card"
                              style="cursor:pointer"
@@ -22,7 +32,8 @@
                              data-price="{{ $product->price }}"
                              data-discount="{{ $product->discount }}"
                              data-image="{{ $product->image ? asset('storage/' . $product->image) : '' }}"
-                             data-ingredients="{{ $product->productIngredients->map(fn($pi) => $pi->ingredient->name)->implode(', ') }}">
+                             data-ingredients="{{ $regularIngredients->implode(', ') }}"
+                             data-special-ingredients='@json($specialIngredients)'>
 
                             @if($product->image)
                                 <img src="{{ asset('storage/' . $product->image) }}"
@@ -80,15 +91,28 @@
                     <strong id="modalProductPrice"></strong>
                 </p>
 
-                <form action="{{ route('cart.add') }}" method="POST" class="d-flex align-items-center gap-2">
+                <form action="{{ route('cart.add') }}" method="POST" class="d-grid gap-3">
                     @csrf
                     <input type="hidden" name="product_id" id="modalProductId">
-                    <label class="form-label mb-0 me-1">Cantidad:</label>
-                    <input type="number" name="quantity" value="1" min="1" max="99"
-                           class="form-control form-control-sm" style="width:80px">
-                    <button type="submit" class="btn btn-primary btn-sm">
-                        <i class="bi bi-cart-plus"></i> Agregar a bandeja
-                    </button>
+
+                    <div id="modalSpecialIngredientWrap" class="d-none">
+                        <label for="modalSpecialIngredient" class="form-label mb-1 fw-semibold">Selecciona una opción</label>
+                        <select name="special_ingredient_id"
+                                id="modalSpecialIngredient"
+                                class="form-select form-select-sm">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                        <div class="form-text">Esta selección define la variante del producto para este pedido.</div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <label class="form-label mb-0 me-1">Cantidad:</label>
+                        <input type="number" name="quantity" value="1" min="1" max="99"
+                               class="form-control form-control-sm" style="width:80px">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="bi bi-cart-plus"></i> Agregar a bandeja
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -106,12 +130,31 @@ document.querySelectorAll('.product-card').forEach(function(card) {
         const discount    = parseInt(this.dataset.discount);
         const image       = this.dataset.image;
         const ingredients = this.dataset.ingredients;
+        const specialIngredients = JSON.parse(this.dataset.specialIngredients || '[]');
         const id          = this.dataset.id;
 
         document.getElementById('modalProductId').value = id;
         document.getElementById('modalProductName').textContent = name;
         document.getElementById('modalProductDescription').textContent = description;
         document.getElementById('modalProductIngredients').textContent = ingredients || 'Sin ingredientes listados';
+
+        const specialWrap = document.getElementById('modalSpecialIngredientWrap');
+        const specialSelect = document.getElementById('modalSpecialIngredient');
+        specialSelect.innerHTML = '<option value="">-- Seleccionar --</option>';
+
+        if (specialIngredients.length > 0) {
+            specialIngredients.forEach(function(ingredient) {
+                const option = document.createElement('option');
+                option.value = ingredient.id;
+                option.textContent = ingredient.name;
+                specialSelect.appendChild(option);
+            });
+            specialSelect.required = true;
+            specialWrap.classList.remove('d-none');
+        } else {
+            specialSelect.required = false;
+            specialWrap.classList.add('d-none');
+        }
 
         const img = document.getElementById('modalProductImage');
         const wrap = document.getElementById('modalImageWrap');

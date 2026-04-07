@@ -13,6 +13,11 @@ class Product extends Model
         'image',
         'discount',
         'price',
+        'is_enabled',
+    ];
+
+    protected $casts = [
+        'is_enabled' => 'boolean',
     ];
 
     // Relación con Category

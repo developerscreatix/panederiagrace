@@ -19,6 +19,7 @@
                 <tr>
                     <th>#</th>
                     <th>Nombre</th>
+                    <th>Tipo</th>
                     <th></th>
                 </tr>
             </thead>
@@ -27,6 +28,13 @@
                     <tr>
                         <td>{{ $ingredient->id }}</td>
                         <td>{{ $ingredient->name }}</td>
+                        <td>
+                            @if($ingredient->is_special)
+                                <span class="badge bg-primary-subtle text-primary">Especial</span>
+                            @else
+                                <span class="badge bg-secondary-subtle text-secondary">Normal</span>
+                            @endif
+                        </td>
                         <td class="text-end">
                             <form action="{{ route('admin.ingredients.destroy', $ingredient) }}"
                                   method="POST"

@@ -24,7 +24,12 @@
                     <tbody>
                         @foreach($order->orderProducts as $op)
                             <tr>
-                                <td>{{ $op->product->name }}</td>
+                                <td>
+                                    {{ $op->product->name }}
+                                    @if($op->specialIngredient)
+                                        <div class="small text-muted">Opción: {{ $op->specialIngredient->name }}</div>
+                                    @endif
+                                </td>
                                 <td class="text-center">{{ $op->quantity }}</td>
                                 <td class="text-end">
                                     ${{ number_format($op->product->price * (1 - $op->product->discount / 100) * $op->quantity, 2) }}

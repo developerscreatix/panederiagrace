@@ -9,6 +9,7 @@ class OrderProduct extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'special_ingredient_id',
         'quantity',
     ];
 
@@ -22,5 +23,10 @@ class OrderProduct extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function specialIngredient()
+    {
+        return $this->belongsTo(Ingredient::class, 'special_ingredient_id');
     }
 }

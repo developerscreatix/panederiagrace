@@ -24,7 +24,12 @@
                         <hr class="my-2">
                         <ul class="list-unstyled mb-2 small">
                             @foreach($order->orderProducts as $op)
-                                <li><i class="bi bi-dot"></i> {{ $op->product->name }} × {{ $op->quantity }}</li>
+                                <li>
+                                    <i class="bi bi-dot"></i> {{ $op->product->name }} × {{ $op->quantity }}
+                                    @if($op->specialIngredient)
+                                        <span class="text-muted">({{ $op->specialIngredient->name }})</span>
+                                    @endif
+                                </li>
                             @endforeach
                         </ul>
                         <p class="mb-0 fw-bold">Total: ${{ number_format($order->total, 2) }}</p>

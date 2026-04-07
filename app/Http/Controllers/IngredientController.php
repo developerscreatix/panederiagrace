@@ -9,7 +9,7 @@ class IngredientController extends Controller
 {
     public function index()
     {
-        $ingredients = Ingredient::all();
+        $ingredients = Ingredient::orderByDesc('is_special')->orderBy('name')->get();
         return view('admin.ingredients.index', compact('ingredients'));
     }
 
@@ -22,7 +22,10 @@ class IngredientController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255|unique:ingredients,name',
+            'is_special' => 'nullable|boolean',
         ]);
+
+        $data['is_special'] = $request->boolean('is_special');
 
         Ingredient::create($data);
 

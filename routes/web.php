@@ -45,7 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/administracion/productos', [ProductController::class, 'adminIndex'])->name('admin.products');
     Route::get('/administracion/productos/crear', [ProductController::class, 'create'])->name('admin.products.create');
     Route::post('/administracion/productos', [ProductController::class, 'store'])->name('admin.products.store');
-    Route::delete('/administracion/productos/{product}', [ProductController::class, 'destroy'])->name('admin.products.destroy');
+    Route::get('/administracion/productos/{product}/editar', [ProductController::class, 'edit'])->name('admin.products.edit');
+    Route::put('/administracion/productos/{product}', [ProductController::class, 'update'])->name('admin.products.update');
+    Route::patch('/administracion/productos/{product}/estado', [ProductController::class, 'toggleEnabled'])->name('admin.products.toggle');
 
     // Categories admin (handled within product views)
     Route::post('/administracion/categorias', [CategoryController::class, 'store'])->name('admin.categories.store');
