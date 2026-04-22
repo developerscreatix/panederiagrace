@@ -326,13 +326,6 @@
                 <i class="bi bi-shop"></i>
                 Volver al catálogo
             </a>
-
-            @if(Route::has('history'))
-                <a href="{{ route('history') }}" class="grace-confirm-btn grace-confirm-btn-secondary">
-                    <i class="bi bi-clock-history"></i>
-                    Ver mis pedidos
-                </a>
-            @endif
         </div>
     </div>
 </div>

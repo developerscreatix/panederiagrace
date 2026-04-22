@@ -70,19 +70,19 @@ class OrderController extends Controller
     }
 
     // Place order
+
     public function store(Request $request)
     {
-
-        $order = Order::create([
-            'client_name' => $request->client_name,
-            'phone_number' => $request->phone_number,
-            'payment_method' => $request->payment_method,
-            'pickup_time' => $request->pickup_time,
-            'notes' => $request->notes,             
-            'total' => $total,
+        $request->validate([
+            'client_name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:30'],
+            'pickup_time' => ['required', 'string', 'max:50'],
+            'notes' => ['nullable', 'string', 'max:500'],
+            'payment_method' => ['required', 'in:transferencia,sucursal'],
         ]);
 
         $cart = session()->get('cart', []);
+
         if (empty($cart)) {
             return redirect()->route('cart')->with('error', 'El carrito está vacío.');
         }
@@ -93,72 +93,47 @@ class OrderController extends Controller
             ->get()
             ->keyBy('id');
 
-        // Calculate subtotal
-        $subtotal = 0;
+        $total = 0;
+
         foreach ($cart as $item) {
-            $itemKey = $item['key'] ?? $this->buildCartItemKey($item['id'], $item['special_ingredient_id'] ?? null);
             $product = $products->get($item['id']);
 
             if (!$product) {
-                throw ValidationException::withMessages([
-                    'cart' => 'Uno de los productos del carrito ya no está disponible.',
-                ]);
+                continue;
             }
 
-            $selectedSpecialIngredient = $this->resolveSpecialIngredient($product, $item['special_ingredient_id'] ?? null);
-            $effectivePrice = $product->price * (1 - ($product->discount / 100));
-            $subtotal += $effectivePrice * $item['quantity'];
-
-            $cart[$itemKey]['key'] = $itemKey;
-            $cart[$itemKey]['price'] = $product->price;
-            $cart[$itemKey]['discount'] = $product->discount;
-            $cart[$itemKey]['special_ingredient_id'] = $selectedSpecialIngredient?->id;
-            $cart[$itemKey]['special_ingredient_name'] = $selectedSpecialIngredient?->name;
+            $unitPrice = $product->price * (1 - ($product->discount / 100));
+            $lineTotal = $unitPrice * $item['quantity'];
+            $total += $lineTotal;
         }
 
-        session()->put('cart', $cart);
-
-        // Find applicable fee
-        $fee = Fee::where('minFee', '<=', $subtotal)
-               ->where('maxFee', '>=', $subtotal)
-                   ->first();
-
-        $total = $fee ? $subtotal * (1 + $fee->percentage / 100) : $subtotal;
-
         $order = Order::create([
-            'fee_id'         => $fee?->id,
             'client_name' => $request->client_name,
             'phone_number' => $request->phone_number,
             'payment_method' => $request->payment_method,
             'pickup_time' => $request->pickup_time,
             'notes' => $request->notes,
-            'is_recieved'    => false,
             'total' => $total,
         ]);
 
-        $hasQuantityColumn = Schema::hasColumn('order_products', 'quantity');
-        $hasSpecialIngredientColumn = Schema::hasColumn('order_products', 'special_ingredient_id');
-
         foreach ($cart as $item) {
-            $orderProductData = [
+            $product = $products->get($item['id']);
+
+            if (!$product) {
+                continue;
+            }
+
+            OrderProduct::create([
                 'order_id' => $order->id,
-                'product_id' => $item['id'],
-            ];
-
-            if ($hasSpecialIngredientColumn) {
-                $orderProductData['special_ingredient_id'] = $item['special_ingredient_id'] ?? null;
-            }
-
-            if ($hasQuantityColumn) {
-                $orderProductData['quantity'] = $item['quantity'];
-            }
-
-            OrderProduct::create($orderProductData);
+                'product_id' => $product->id,
+                'special_ingredient_id' => $item['special_ingredient_id'] ?? null,
+                'quantity' => $item['quantity'],
+            ]);
         }
 
         session()->forget('cart');
 
-        return redirect()->route('confirmation', $order->id);
+        return redirect()->route('confirmation', $order);
     }
 
     // Confirmation page
