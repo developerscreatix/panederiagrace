@@ -91,6 +91,17 @@
         background: #faf9f7;
     }
 
+    .grace-card-badge{
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        width: 84px;
+        max-width: 32%;
+        height: auto;
+        z-index: 3;
+        pointer-events: none;
+    }
+
     .grace-card-image-box{
         width: 100%;
         aspect-ratio: 1 / 0.72;
@@ -102,7 +113,7 @@
         justify-content: center;
     }
 
-    .grace-card-image img{
+    .grace-card-image-box img{
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -447,6 +458,11 @@
         .grace-products-grid{ grid-template-columns: 1fr 1fr; gap: 12px; }
         .grace-card-name{ font-size: .92rem; }
         .grace-filter-btn{ min-width: auto; padding: 10px 14px; font-size: .82rem; }
+        .grace-card-badge{
+            width: 68px;
+            top: 14px;
+            left: 14px;
+        }
     }
 </style>
 
@@ -456,6 +472,8 @@
         'storage/products/publicidad2.png',
         'storage/products/publicidad3.png',
     ];
+
+    $productBadge = 'storage/products/Recurso 6.png';
 @endphp
 
 <div class="catalog-header">
@@ -545,6 +563,12 @@
                                      data-special-ingredient-names='@json($specialNames)'>
 
                                     <div class="grace-card-image">
+                                        <img
+                                            src="{{ asset($productBadge) }}"
+                                            alt="Panadería Grace"
+                                            class="grace-card-badge"
+                                        >
+
                                         <div class="grace-card-image-box">
                                             @if($product->image)
                                                 <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
@@ -568,7 +592,6 @@
                                         </div>
 
                                         <span class="grace-card-icon" aria-hidden="true">
-
                                             <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 528.46 423.84">
                                                 <defs>
                                                     <style>

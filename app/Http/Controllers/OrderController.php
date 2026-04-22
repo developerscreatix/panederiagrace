@@ -32,6 +32,7 @@ class OrderController extends Controller
         $product = Product::where('is_enabled', true)
             ->with('productIngredients.ingredient')
             ->findOrFail($request->product_id);
+
         $cart = session()->get('cart', []);
         $specialIngredient = $this->resolveSpecialIngredient($product, $request->input('special_ingredient_id'));
 
@@ -47,12 +48,14 @@ class OrderController extends Controller
                 'price' => $product->price,
                 'discount' => $product->discount,
                 'quantity' => $request->quantity,
+                'image' => $product->image ? asset('storage/' . $product->image) : null,
                 'special_ingredient_id' => $specialIngredient?->id,
                 'special_ingredient_name' => $specialIngredient?->name,
             ];
         }
 
         session()->put('cart', $cart);
+
         return redirect()->route('home')->with('success', 'Producto agregado al carrito.');
     }
 
@@ -66,11 +69,11 @@ class OrderController extends Controller
             unset($cart[$cartKey]);
             session()->put('cart', $cart);
         }
+
         return redirect()->route('cart');
     }
 
     // Place order
-
     public function store(Request $request)
     {
         $request->validate([
@@ -150,6 +153,7 @@ class OrderController extends Controller
                         ->where('is_recieved', false)
                         ->orderBy('created_at', 'asc')
                         ->get();
+
         return view('dashboard', compact('orders'));
     }
 
@@ -167,6 +171,7 @@ class OrderController extends Controller
                         ->where('is_recieved', true)
                         ->orderBy('updated_at', 'desc')
                         ->get();
+
         return view('history', compact('orders'));
     }
 
@@ -216,7 +221,6 @@ class OrderController extends Controller
     {
         return $productId . ':' . ($specialIngredientId ?? 'base');
     }
-
 
     public function update(Request $request)
     {

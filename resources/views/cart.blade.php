@@ -511,12 +511,17 @@
                             $lineTotal = $unitPrice * $item['quantity'];
                             $subtotal += $lineTotal;
                             $cartKey = $item['key'] ?? $item['id'];
+                            $itemImage = !empty($item['image']) ? $item['image'] : null;
                         @endphp
 
                         <div class="grace-order-item">
                             <div class="grace-order-item-image">
-                                @if(!empty($item['image']))
-                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}">
+                                @if($itemImage)
+                                    <img
+                                        src="{{ $itemImage }}"
+                                        alt="{{ $item['name'] }}"
+                                        onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=&quot;bi bi-image text-muted&quot;></i>';"
+                                    >
                                 @else
                                     <i class="bi bi-image text-muted"></i>
                                 @endif
