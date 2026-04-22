@@ -73,12 +73,13 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([
-            'client_name' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'string', 'max:30'],
-            'pickup_time' => ['required', 'string', 'max:50'],
-            'notes' => ['nullable', 'string', 'max:500'],
-            'payment_method' => ['required', 'in:transferencia,sucursal'],
+        $order = Order::create([
+            'client_name' => $request->client_name,
+            'phone_number' => $request->phone_number,
+            'payment_method' => $request->payment_method,
+            'pickup_time' => $request->pickup_time,
+            'notes' => $request->notes,             
+            'total' => $total,
         ]);
 
         $cart = session()->get('cart', []);

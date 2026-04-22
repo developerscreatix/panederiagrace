@@ -11,6 +11,8 @@ class Order extends Model
         'client_name',
         'phone_number',
         'payment_method',
+        'pickup_time', 
+        'notes',         
         'total',
         'is_recieved',
     ];
