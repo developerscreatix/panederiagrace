@@ -569,7 +569,29 @@
 
                                         <span class="grace-card-icon" aria-hidden="true">
 
-                                        <i class="fa-solid fa-basket-shopping"></i>
+                                            <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 528.46 423.84">
+                                                <defs>
+                                                    <style>
+                                                    .cls-1 {
+                                                        fill: none;
+                                                        stroke: #ffffff;
+                                                        stroke-miterlimit: 10;
+                                                        stroke-width: 65px;
+                                                    }
+
+                                                    .cls-2 {
+                                                        fill: #ffffff;
+                                                    }
+                                                    </style>
+                                                </defs>
+                                                <g id="Capa_1-2" data-name="Capa 1">
+                                                    <g>
+                                                    <path class="cls-1" d="M159.6,259.12c17.41,13.35,36.16,26.57,56.01,39.39,126.64,81.79,250.06,115.95,275.66,76.3,25.6-39.64-56.31-138.08-182.95-219.87-18.5-11.94-36.92-22.87-54.98-32.7"/>
+                                                    <ellipse class="cls-2" cx="122.42" cy="231.11" rx="55.38" ry="141.23" transform="translate(-138.14 208.56) rotate(-57.15)"/>
+                                                    <ellipse class="cls-2" cx="213.3" cy="89.65" rx="55.38" ry="141.23" transform="translate(22.27 220.19) rotate(-57.15)"/>
+                                                    </g>
+                                                </g>
+                                            </svg>
                                         </span>
                                     </div>
                                 </div>
@@ -657,7 +679,29 @@
 
                                 <button type="submit" class="grace-add-btn" data-show-loader>
                                     <span id="modalAddButtonText">Agregar a bandeja</span>
-                                    <i class="fa-solid fa-basket-shopping"></i>
+                                    <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 528.46 423.84">
+                                        <defs>
+                                            <style>
+                                            .cls-1 {
+                                                fill: none;
+                                                stroke: #ffffff;
+                                                stroke-miterlimit: 10;
+                                                stroke-width: 65px;
+                                            }
+
+                                            .cls-2 {
+                                                fill: #ffffff;
+                                            }
+                                            </style>
+                                        </defs>
+                                        <g id="Capa_1-2" data-name="Capa 1">
+                                            <g>
+                                            <path class="cls-1" d="M159.6,259.12c17.41,13.35,36.16,26.57,56.01,39.39,126.64,81.79,250.06,115.95,275.66,76.3,25.6-39.64-56.31-138.08-182.95-219.87-18.5-11.94-36.92-22.87-54.98-32.7"/>
+                                            <ellipse class="cls-2" cx="122.42" cy="231.11" rx="55.38" ry="141.23" transform="translate(-138.14 208.56) rotate(-57.15)"/>
+                                            <ellipse class="cls-2" cx="213.3" cy="89.65" rx="55.38" ry="141.23" transform="translate(22.27 220.19) rotate(-57.15)"/>
+                                            </g>
+                                        </g>
+                                    </svg>
                                 </button>
                             </div>
                         </form>
