@@ -72,10 +72,13 @@ class OrderController extends Controller
     // Place order
     public function store(Request $request)
     {
+
         $request->validate([
-            'client_name'    => 'required|string|max:255',
-            'phone_number'   => 'required|string|max:30',
-            'payment_method' => 'required|in:transferencia,efectivo',
+            'client_name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:30'],
+            'pickup_time' => ['required', 'string', 'max:50'],
+            'notes' => ['nullable', 'string', 'max:500'],
+            'payment_method' => ['required', 'in:transferencia,sucursal'],
         ]);
 
         $cart = session()->get('cart', []);
@@ -123,11 +126,13 @@ class OrderController extends Controller
 
         $order = Order::create([
             'fee_id'         => $fee?->id,
-            'client_name'    => $request->client_name,
-            'phone_number'   => $request->phone_number,
+            'client_name' => $request->client_name,
+            'phone_number' => $request->phone_number,
             'payment_method' => $request->payment_method,
-            'total'          => round($total, 2),
+            'pickup_time' => $request->pickup_time,
+            'notes' => $request->notes,
             'is_recieved'    => false,
+            'total' => $total,
         ]);
 
         $hasQuantityColumn = Schema::hasColumn('order_products', 'quantity');
@@ -234,5 +239,30 @@ class OrderController extends Controller
     private function buildCartItemKey(int $productId, ?int $specialIngredientId): string
     {
         return $productId . ':' . ($specialIngredientId ?? 'base');
+    }
+
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'cart_key' => ['required'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:99'],
+        ]);
+
+        $cart = session()->get('cart', []);
+        $cartKey = $request->cart_key;
+
+        foreach ($cart as $index => $item) {
+            $currentKey = $item['key'] ?? $item['id'];
+
+            if ((string) $currentKey === (string) $cartKey) {
+                $cart[$index]['quantity'] = (int) $request->quantity;
+                break;
+            }
+        }
+
+        session()->put('cart', $cart);
+
+        return back()->with('success', 'Cantidad actualizada.');
     }
 }

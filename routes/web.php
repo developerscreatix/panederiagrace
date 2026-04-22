@@ -17,7 +17,7 @@ Route::post('/carrito/agregar', [OrderController::class, 'addToCart'])->name('ca
 Route::post('/carrito/eliminar', [OrderController::class, 'removeFromCart'])->name('cart.remove');
 Route::post('/carrito/pedido', [OrderController::class, 'store'])->name('order.store');
 Route::get('/confirmacion/{order}', [OrderController::class, 'confirmation'])->name('confirmation');
-
+Route::post('/carrito/update', [OrderController::class, 'update'])->name('cart.update');
 // Auth
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
