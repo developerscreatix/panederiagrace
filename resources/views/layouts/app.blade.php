@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panadería Grace</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,9 +26,6 @@
             --grace-accent: #c98655;
             --grace-shadow: 0 12px 28px rgba(93, 58, 34, 0.10);
             --grace-shadow-soft: 0 8px 18px rgba(93, 58, 34, 0.08);
-            --grace-radius-xl: 26px;
-            --grace-radius-lg: 20px;
-            --grace-radius-md: 14px;
             --grace-header-height: 92px;
         }
 
@@ -58,9 +55,6 @@
             margin: 0 auto;
         }
 
-        /* =========================
-           LOADING SCREEN
-        ========================== */
         .grace-loader-overlay{
             position: fixed;
             inset: 0;
@@ -126,9 +120,6 @@
             to{ width: 82%; }
         }
 
-        /* =========================
-           HEADER
-        ========================== */
         .grace-navbar-wrap{
             background: var(--grace-brown);
             min-height: var(--grace-header-height);
@@ -154,22 +145,22 @@
         }
 
         .grace-brand-mark{
-            width: 46px;
-            height: 46px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: #f4e9d5;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             flex-shrink: 0;
-            box-shadow: 0 0 0 2px rgba(255,255,255,.08);
         }
 
         .grace-brand-mark img{
             width: 100%;
             height: 100%;
             object-fit: contain;
+            display: block;
         }
 
         .grace-brand-text{
@@ -181,29 +172,29 @@
             white-space: nowrap;
         }
 
-        .grace-navbar-spacer{
-            flex: 1;
-        }
+        .grace-navbar-spacer{ flex: 1; }
 
         .grace-navbar-actions{
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             flex-shrink: 0;
         }
 
         .grace-nav-icon-btn{
-            width: 42px;
-            height: 42px;
+            width: 54px;
+            height: 54px;
             border: 0;
             background: transparent;
             color: #fff5eb;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
+            border-radius: 16px;
             position: relative;
             transition: background .18s ease, transform .18s ease;
+            flex-shrink: 0;
+            padding: 0;
         }
 
         .grace-nav-icon-btn:hover,
@@ -212,16 +203,19 @@
             transform: translateY(-1px);
         }
 
-        .grace-nav-icon-btn svg{
+        .grace-nav-icon-btn svg,
+        .grace-nav-icon-btn i{
             width: 22px;
             height: 22px;
             display: block;
+            font-size: 22px;
+            line-height: 22px;
         }
 
         .grace-cart-badge{
             position: absolute;
-            top: 4px;
-            right: 3px;
+            top: 6px;
+            right: 6px;
             min-width: 17px;
             height: 17px;
             border-radius: 999px;
@@ -237,7 +231,7 @@
 
         .grace-search-wrap{
             position: relative;
-            width: min(230px, 100%);
+            width: min(260px, 100%);
             flex-shrink: 0;
         }
 
@@ -253,22 +247,20 @@
 
         .grace-search-input{
             width: 100%;
-            height: 38px;
+            height: 46px;
             border: 0;
             outline: none;
-            border-radius: 10px;
+            border-radius: 14px;
             background: rgba(240, 204, 180, 0.32);
             color: #fff7f1;
             padding: 0 14px 0 34px;
-            font-size: .82rem;
+            font-size: .95rem;
             font-weight: 700;
         }
 
         .grace-search-input::placeholder{
             color: rgba(255,247,241,.92);
         }
-
-        .grace-mobile-extra{ display:none; }
 
         .alert{
             border: 0;
@@ -315,39 +307,27 @@
 
             .grace-navbar-actions{
                 margin-left: auto;
+                flex-wrap: wrap;
+                justify-content: flex-end;
             }
 
             .grace-search-wrap{
                 width: 100%;
                 order: 4;
             }
-
-            .grace-mobile-extra{
-                display:block;
-                width: 100%;
-                background: #fff;
-                border: 1px solid var(--grace-border);
-                border-radius: 16px;
-                padding: 10px 12px;
-                box-shadow: var(--grace-shadow-soft);
-            }
-
-            .grace-mobile-extra .nav-link{
-                color: var(--grace-text);
-                font-weight: 800;
-                border-radius: 10px;
-                padding: 8px 10px;
-            }
-
-            .grace-mobile-extra .nav-link.active{
-                background: #f3e8df;
-                color: var(--grace-brown);
-            }
         }
 
         @media (max-width: 575.98px){
             .grace-brand-text{ font-size: 1.25rem; }
-            .grace-brand-mark{ width: 42px; height: 42px; }
+            .grace-brand-mark{ width: 50px; height: 50px; }
+            .grace-nav-icon-btn{
+                width: 48px;
+                height: 48px;
+            }
+            .grace-search-input{
+                height: 42px;
+                font-size: .88rem;
+            }
         }
     </style>
 
@@ -399,24 +379,70 @@
                        class="grace-nav-icon-btn {{ request()->routeIs('home') || request()->routeIs('dashboard') ? 'active' : '' }}"
                        title="Inicio"
                        aria-label="Inicio">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M12 3.4 3.6 10a1 1 0 0 0 .62 1.8h1.03v7.08A2.12 2.12 0 0 0 7.37 21h3.22v-5.03c0-.47.38-.85.85-.85h1.12c.47 0 .85.38.85.85V21h3.22a2.12 2.12 0 0 0 2.12-2.12V11.8h1.03A1 1 0 0 0 20.4 10L12 3.4Z"/>
-                        </svg>
+                        <i class="bi bi-house-fill"></i>
                     </a>
 
                     <a href="{{ route('cart') }}"
-                       class="grace-nav-icon-btn {{ request()->routeIs('cart') ? 'active' : '' }}"
-                       title="Bandeja"
-                       aria-label="Bandeja">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M4.62 14.82c2.08-3.68 5.1-7.02 8.58-9.8.9-.72 2.16-.82 3.18-.24 1 .57 1.55 1.67 1.38 2.8-.62 4.13-2.2 8.04-4.66 11.43-.72.99-1.97 1.43-3.16 1.12-2.23-.58-4.08-2.1-5.18-4.24a2.87 2.87 0 0 1-.14-2.07Zm9.8-7.42C11.6 9.76 9.14 12.5 7.34 15.55c.7 1.1 1.77 1.9 3 2.26 1.95-2.9 3.23-6.16 3.78-9.57l.3-.84Z"/>
-                            <path d="M14.64 17.66a1.1 1.1 0 1 1 2.2 0 1.1 1.1 0 0 1-2.2 0Z"/>
-                        </svg>
+                    class="grace-nav-icon-btn {{ request()->routeIs('cart') ? 'active' : '' }}"
+                    title="Bandeja"
+                    aria-label="Bandeja">
+
+                        <i class="fa-solid fa-basket-shopping"></i>
+
                         @php $cartCount = count(session()->get('cart', [])); @endphp
                         @if($cartCount > 0)
                             <span class="grace-cart-badge">{{ $cartCount }}</span>
                         @endif
                     </a>
+
+                    @auth
+                        <a href="{{ route('history') }}"
+                           class="grace-nav-icon-btn {{ request()->routeIs('history') ? 'active' : '' }}"
+                           title="Historial"
+                           aria-label="Historial">
+                            <i class="bi bi-clock-history"></i>
+                        </a>
+
+                        <a href="{{ route('wallet') }}"
+                           class="grace-nav-icon-btn {{ request()->routeIs('wallet') ? 'active' : '' }}"
+                           title="Cartera"
+                           aria-label="Cartera">
+                            <i class="bi bi-wallet2"></i>
+                        </a>
+
+                        @if(Route::has('admin'))
+                            <a href="{{ route('admin') }}"
+                               class="grace-nav-icon-btn {{ request()->routeIs('admin') || request()->routeIs('admin.*') ? 'active' : '' }}"
+                               title="Administración"
+                               aria-label="Administración">
+                                <i class="bi bi-gear"></i>
+                            </a>
+                        @endif
+
+                        <a href="{{ route('profile') }}"
+                           class="grace-nav-icon-btn {{ request()->routeIs('profile') ? 'active' : '' }}"
+                           title="Cuenta"
+                           aria-label="Cuenta">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+
+                        <form action="{{ route('logout') }}" method="POST" class="m-0">
+                            @csrf
+                            <button type="submit"
+                                    class="grace-nav-icon-btn {{ request()->routeIs('logout') ? 'active' : '' }}"
+                                    title="Salir"
+                                    aria-label="Salir">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}"
+                           class="grace-nav-icon-btn {{ request()->routeIs('login') ? 'active' : '' }}"
+                           title="Login"
+                           aria-label="Login">
+                            <i class="bi bi-person"></i>
+                        </a>
+                    @endauth
                 </div>
 
                 <div class="grace-search-wrap">
@@ -428,35 +454,6 @@
                         placeholder="Buscar pan..."
                         autocomplete="off"
                     >
-                </div>
-
-                <div class="grace-mobile-extra">
-                    <div class="d-flex flex-wrap gap-2">
-                        @auth
-                            <a class="nav-link {{ request()->routeIs('history') ? 'active' : '' }}" href="{{ route('history') }}">
-                                <i class="bi bi-clock-history me-1"></i> Historial
-                            </a>
-                            <a class="nav-link {{ request()->routeIs('wallet') ? 'active' : '' }}" href="{{ route('wallet') }}">
-                                <i class="bi bi-wallet2 me-1"></i> Cartera
-                            </a>
-                            <a class="nav-link {{ request()->routeIs('admin') || request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin') }}">
-                                <i class="bi bi-gear me-1"></i> Administración
-                            </a>
-                            <a class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}" href="{{ route('profile') }}">
-                                <i class="bi bi-person-circle me-1"></i> Cuenta
-                            </a>
-                            <form action="{{ route('logout') }}" method="POST" class="ms-auto">
-                                @csrf
-                                <button class="btn btn-sm btn-outline-dark" type="submit">
-                                    <i class="bi bi-box-arrow-right me-1"></i> Salir
-                                </button>
-                            </form>
-                        @else
-                            <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">
-                                <i class="bi bi-person me-1"></i> Login
-                            </a>
-                        @endauth
-                    </div>
                 </div>
 
             </div>
