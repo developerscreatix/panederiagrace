@@ -687,7 +687,7 @@
                             <input type="hidden" name="quantity" id="modalQuantity" value="1">
                             <input type="hidden" name="special_ingredient_id" id="modalSelectedSpecialIngredient">
 
-                            <div id="modalSpecialIngredientWrap" class="mt-3 d-none">
+                            <div id="modalSpecialIngredientWrap" class="mt-3 d-none" style="display: none;">
                                 <label for="modalSpecialIngredient" class="form-label fw-bold">Selecciona una opción</label>
                                 <select id="modalSpecialIngredient" class="form-select">
                                     <option value="">-- Seleccionar --</option>
@@ -852,7 +852,7 @@
         if (!modalFlavorOptions) return;
 
         const cleanNames = Array.isArray(names) ? names.filter(Boolean) : [];
-        const fallback = ['Vainilla', 'Chocolate', 'Fresa'];
+        const fallback = [];
         const finalNames = cleanNames.length ? cleanNames : fallback;
 
         modalFlavorOptions.innerHTML = finalNames.map((name, index) => `

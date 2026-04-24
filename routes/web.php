@@ -64,3 +64,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/cuenta/perfil', [UserController::class, 'updateProfile'])->name('profile.update');
     Route::post('/cuenta/contrasena', [UserController::class, 'updatePassword'])->name('profile.password');
 });
+
+Route::get('/crear-link', function () {
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+
+    if (file_exists($link)) {
+        return 'El enlace ya existe.';
+    }
+
+    app('files')->link($target, $link);
+    return 'Enlace simbólico creado con éxito.';
+});
