@@ -35,12 +35,22 @@
                         <p class="mb-0 fw-bold">Total: ${{ number_format($order->total, 2) }}</p>
                     </div>
                     <div class="card-footer">
-                        <form action="{{ route('order.status', $order) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-sm w-100">
-                                <i class="bi bi-check-circle"></i> Marcar como recibido
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <form action="{{ route('order.status', $order) }}" method="POST" class="flex-fill">
+                                @csrf
+                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                    <i class="bi bi-check-circle"></i> Marcar como recibido
+                                </button>
+                            </form>
+
+                            <form action="{{ route('order.disable', $order) }}" method="POST" class="flex-fill"
+                                  onsubmit="return confirm('¿Deseas deshabilitar este pedido?');">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                    <i class="bi bi-trash"></i> Borrarlo
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

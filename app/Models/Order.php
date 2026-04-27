@@ -15,6 +15,7 @@ class Order extends Model
         'notes',         
         'total',
         'is_recieved',
+        'is_enabled',
     ];
 
     // Relación con OrderProduct (una orden tiene muchos order_products)

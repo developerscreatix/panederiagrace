@@ -467,24 +467,19 @@
 </style>
 
 @php
-    $promoImages = [
-        'storage/products/publicidad1.png',
-        'storage/products/publicidad2.png',
-        'storage/products/publicidad3.png',
-    ];
-
     $productBadge = 'storage/products/Recurso 6.png';
 @endphp
 
 <div class="catalog-header">
+    @if($advertisements->isNotEmpty())
     <div id="graceHeroCarousel" class="carousel slide grace-hero-carousel" data-bs-ride="carousel" data-bs-interval="3500">
         <div class="carousel-inner">
-            @foreach($promoImages as $index => $promoImage)
-                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+            @foreach($advertisements as $i => $ad)
+                <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
                     <img
-                        src="{{ asset($promoImage) }}"
+                        src="{{ asset('storage/' . $ad->image) }}"
                         class="grace-hero-slide"
-                        alt="Promoción {{ $index + 1 }}"
+                        alt="{{ $ad->name }}"
                         onerror="this.onerror=null;this.src='https://placehold.co/1400x420/e9e9e9/9a9a9a?text=Publicidad';"
                     >
                 </div>
@@ -501,6 +496,7 @@
             <span class="visually-hidden">Siguiente</span>
         </button>
     </div>
+    @endif
 
     @if($categories->isEmpty())
         <div class="grace-empty-results show">

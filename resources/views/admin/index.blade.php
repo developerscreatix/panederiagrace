@@ -22,5 +22,14 @@
             </div>
         </a>
     </div>
+    <div class="col-sm-6 col-md-4">
+        <a href="{{ route('admin.advertisements') }}" class="text-decoration-none">
+            <div class="card text-center p-4 h-100">
+                <div class="fs-1 mb-2 text-warning"><i class="bi bi-images"></i></div>
+                <h5 class="fw-bold mb-1">Publicidad</h5>
+                <p class="text-muted small mb-0">Gestionar las imágenes del carrusel en inicio.</p>
+            </div>
+        </a>
+    </div>
 </div>
 @endsection

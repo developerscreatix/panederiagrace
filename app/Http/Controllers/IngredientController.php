@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class IngredientController extends Controller
 {
@@ -20,12 +21,19 @@ class IngredientController extends Controller
 
     public function store(Request $request)
     {
+        $isSpecial = $request->boolean('is_special');
+
         $data = $request->validate([
-            'name' => 'required|string|max:255|unique:ingredients,name',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('ingredients', 'name')->where(fn ($query) => $query->where('is_special', $isSpecial)),
+            ],
             'is_special' => 'nullable|boolean',
         ]);
 
-        $data['is_special'] = $request->boolean('is_special');
+        $data['is_special'] = $isSpecial;
 
         Ingredient::create($data);
 

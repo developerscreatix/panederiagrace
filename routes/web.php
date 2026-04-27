@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\IngredientController;
@@ -29,6 +30,7 @@ Route::middleware('auth')->group(function () {
     // Dashboard (pending orders)
     Route::get('/inicio', [OrderController::class, 'dashboard'])->name('dashboard');
     Route::post('/pedido/{order}/estado', [OrderController::class, 'toggleStatus'])->name('order.status');
+    Route::post('/pedido/{order}/deshabilitar', [OrderController::class, 'disable'])->name('order.disable');
 
     // History
     Route::get('/historial', [OrderController::class, 'history'])->name('history');
@@ -59,8 +61,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/administracion/ingredientes', [IngredientController::class, 'store'])->name('admin.ingredients.store');
     Route::delete('/administracion/ingredientes/{ingredient}', [IngredientController::class, 'destroy'])->name('admin.ingredients.destroy');
 
+    // Advertisements admin
+    Route::get('/administracion/publicidad', [AdvertisementController::class, 'index'])->name('admin.advertisements');
+    Route::post('/administracion/publicidad', [AdvertisementController::class, 'store'])->name('admin.advertisements.store');
+    Route::delete('/administracion/publicidad/{advertisement}', [AdvertisementController::class, 'destroy'])->name('admin.advertisements.destroy');
+
     // Profile
     Route::get('/cuenta', [UserController::class, 'profile'])->name('profile');
     Route::post('/cuenta/perfil', [UserController::class, 'updateProfile'])->name('profile.update');
     Route::post('/cuenta/contrasena', [UserController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/cuenta/usuarios', [UserController::class, 'storeUser'])->name('users.store');
+    Route::delete('/cuenta/usuarios/{user}', [UserController::class, 'destroyUser'])->name('users.destroy');
 });

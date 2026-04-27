@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Precio (₡) *</label>
+                            <label class="form-label fw-semibold">Precio ($) *</label>
                             <input type="number" name="price" step="0.01" min="0"
                                    class="form-control @error('price') is-invalid @enderror"
                                    value="{{ old('price', $product->price) }}" required>

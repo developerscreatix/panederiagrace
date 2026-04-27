@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Advertisement;
 use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Product;
@@ -21,7 +22,9 @@ class ProductController extends Controller
 
         $categories = $categories->filter(fn ($category) => $category->products->isNotEmpty());
 
-        return view('home', compact('categories'));
+        $advertisements = Advertisement::orderBy('created_at', 'asc')->get();
+
+        return view('home', compact('categories', 'advertisements'));
     }
 
     // Admin: list products

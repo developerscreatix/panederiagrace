@@ -150,6 +150,7 @@ class OrderController extends Controller
     public function dashboard()
     {
         $orders = Order::with('orderProducts.product', 'orderProducts.specialIngredient')
+                        ->where('is_enabled', true)
                         ->where('is_recieved', false)
                         ->orderBy('created_at', 'asc')
                         ->get();
@@ -162,6 +163,13 @@ class OrderController extends Controller
     {
         $order->update(['is_recieved' => !$order->is_recieved]);
         return redirect()->back()->with('success', 'Estado actualizado.');
+    }
+
+    // Admin: disable pending order (soft remove from pending list)
+    public function disable(Order $order)
+    {
+        $order->update(['is_enabled' => false]);
+        return redirect()->back()->with('success', 'Pedido deshabilitado.');
     }
 
     // Admin: completed orders (history)
